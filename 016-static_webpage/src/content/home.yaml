@@ -1,0 +1,21 @@
+description: |
+  # Home
+
+  Here I am using **markdown**. And there is plently of things you can do.
+
+  > Like this quote. Of course if you want to look good you should change the style
+
+  You can also talk abou a `file` and add some code:
+
+  ```python
+  @APP.route("/")
+  @APP.route("/home.html")
+  def home():
+      """ home page """
+      return render_template("home.html", **_read_yaml("home"))
+  ```
+
+  And images
+  <div class="w3-center">
+    <img src="/static/expensorpy.jpg" alt="expensorpy" class="w3-image w3-padding-16"/>
+  </div>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <title>Test page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='villoro.css') }}">
+
+
+  <body>
+    <!-- Navbar -->
+    <div class="w3-top w3-blue">
+      <div class="w3-bar w3-left-align w3-large" id="navbar">
+
+        <!-- Navigation regular screens -->
+        <div class="w3-right">
+          <a href="{{ url_for('home') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-text-white">Home</a>
+          <a href="{{ url_for('about') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-text-white">About</a> <!-- crop text to fit medium screens -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Add some space -->
+    <div style="height: 56px"></div>
+
+    <!-- Add children body -->
+    {% block body %}{% endblock %}
+
+    <!-- Footer with 3 columns (on medium/big screens) -->
+    <footer class="w3-container w3-center w3-row w3-grey w3-padding-large w3-text-white">
+      Made by Villoro (<a href="mailto:arnau@villoro.com" class="w3-hover-opacity" style="color:#fff!important">arnau@villoro.com</a>). 
+
+      You can fork it on <a href="https://github.com/villoro/villoro.com" class="w3-hover-opacity" style="color:#fff!important">github</a> if you like it
+    </footer>
+
+  </body>
+</html>

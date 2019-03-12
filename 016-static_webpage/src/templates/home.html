@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block body%}
+  <div class="w3-content w3-padding">
+    {% autoescape false %} {{ description }} {% endautoescape %}
+  </div>
+{% endblock %}

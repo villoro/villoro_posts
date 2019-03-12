@@ -9,33 +9,20 @@
   <!-- Custom styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='villoro.css') }}">
 
+
   <body>
     <!-- Navbar -->
     <div class="w3-top w3-blue">
       <div class="w3-bar w3-left-align w3-large" id="navbar">
 
         <!-- Navigation regular screens -->
-        <div class="w3-right w3-hide-small">
+        <div class="w3-right">
           <a href="{{ url_for('home') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-text-white">Home</a>
           <a href="{{ url_for('about') }}" class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-text-white">About</a> <!-- crop text to fit medium screens -->
         </div>
 
-        <!-- Sidebar three bars button on small screens -->
-        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-large w3-text-white"
-              href="javascript:void(0);" onclick="sidebar_open()" title="Toggle Navigation Menu">
-          <i class="fa fa-bars"></i>
-        </a>
       </div>
     </div>
-
-    <!-- Sidebar on small screens -->
-    <div id="sidebar" class="w3-sidebar w3-bar-block w3-animate-right" style="display:none; z-index:5; right:0">
-      <a href="{{ url_for('home') }}" class="w3-bar-item w3-button w3-padding-large w3-border-bottom">Home</a>
-      <a href="{{ url_for('about') }}" class="w3-bar-item w3-button w3-padding-large w3-border-bottom">About me</a>
-    </div>
-
-    <!-- Overlay -->
-    <div class="w3-overlay w3-animate-opacity" onclick="sidebar_close()" style="cursor:pointer" id="overlay"></div>
 
     <!-- Add some space -->
     <div style="height: 56px"></div>
@@ -49,19 +36,6 @@
 
       You can fork it on <a href="https://github.com/villoro/villoro.com" class="w3-hover-opacity" style="color:#fff!important">github</a> if you like it
     </footer>
-
-    <script>
-      // Open sidebar (only for small screens)
-      function sidebar_open() {
-          document.getElementById("sidebar").style.display = "block";
-          document.getElementById("overlay").style.display = "block";
-      }
-      // Close sidebar (only for small screens)
-      function sidebar_close() {
-          document.getElementById("sidebar").style.display = "none";
-          document.getElementById("overlay").style.display = "none";
-      }
-    </script>
 
   </body>
 </html>

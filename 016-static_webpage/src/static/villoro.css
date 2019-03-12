@@ -1,0 +1,23 @@
+/* ----------------------- Basic layout ----------------------------------------------------------*/
+
+
+/* ----------------------- Markdown related styles -----------------------------------------------*/
+blockquote {
+  border-left: .25em solid #2176FF; /* Github color #DFE2E5*/
+  color: #757575;
+  padding: 0 1em;
+  margin: 0;
+}
+
+code {
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-size: 85%;
+  margin: 0;
+  padding: .2em .4em;
+}
+
+/* ----------------------- Other -----------------------------------------------------------------*/
+/* change link colors */
+a {color:#2176FF}
+a:hover {color:#FFCA28}

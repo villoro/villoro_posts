@@ -14,7 +14,9 @@ import yaml
 import pandas as pd
 from tqdm import tqdm
 
-PATH = "data/"
+PATH_DATA = "data/"
+PATH_RESULTS = "results/"
+
 FILES = ["bike_sharing_daily", "cbg_patterns", "checkouts-by-title"]
 
 FUNCS = {
@@ -26,14 +28,15 @@ FUNCS = {
     },
 }
 
-ITERATIONS = {0: 10, 1: 2}  # 10, 2: 4}
+ITERATIONS = {0: 10, 1: 2}
+# ITERATIONS = {0: 100, 1: 10, 2: 4}
 
 
 def clean():
     """ Clean previously created files """
-    for name in os.listdir(PATH):
+    for name in os.listdir(PATH_DATA):
         if "." in name and name.split(".")[0] == "data":
-            os.remove(f"{PATH}{name}")
+            os.remove(f"{PATH_DATA}{name}")
 
 
 def test_write(size, iterations=10):
@@ -48,7 +51,7 @@ def test_write(size, iterations=10):
             dictionary with results
     """
 
-    df = pd.read_csv(f"{PATH}{FILES[size]}.csv")
+    df = pd.read_csv(f"{PATH_DATA}{FILES[size]}.csv")
 
     results = {}
 
@@ -56,9 +59,9 @@ def test_write(size, iterations=10):
 
         results[extension] = []
 
-        for _ in tqdm(range(iterations), f"{extension:10}"):
+        for _ in tqdm(range(iterations), desc=f"{extension:10}"):
             t0 = time()
-            func(df, f"{PATH}data.{extension}")
+            func(df, f"{PATH_DATA}data.{extension}")
             results[extension].append(time() - t0)
 
     return results
@@ -82,9 +85,9 @@ def test_read(size, iterations=10):
 
         results[extension] = []
 
-        for _ in tqdm(range(iterations), f"{extension:10}"):
+        for _ in tqdm(range(iterations), desc=f"{extension:10}"):
             t0 = time()
-            func(f"{PATH}data.{extension}")
+            func(f"{PATH_DATA}data.{extension}")
             results[extension].append(time() - t0)
 
     return results
@@ -93,10 +96,10 @@ def test_read(size, iterations=10):
 def store_results(data, size):
     """ Store results as a yaml """
 
-    with open(f"{PATH}results_{size}.yaml", "w") as outfile:
+    with open(f"{PATH_RESULTS}results_{size}.yaml", "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
-    print(f"\n- Data {PATH}results_{size}.yaml stored")
+    print(f"\n- Data {PATH_RESULTS}results_{size}.yaml stored")
 
 
 def full_test(size, iterations=10):
@@ -112,7 +115,7 @@ def full_test(size, iterations=10):
 
 if __name__ == "__main__":
 
-    # full_test(0)
+    full_test(0)
 
-    for size, iterations in ITERATIONS.items():
-        full_test(size, iterations)
+    # for size, iterations in ITERATIONS.items():
+    #     full_test(size, iterations)

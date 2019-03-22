@@ -39,10 +39,26 @@ FUNCS = {
 }
 
 COMPRESSIONS = {
-    "csv": ["infer", "gzip", "bz2", "zip", "xz", None],
-    "pickle": ["infer", "gzip", "bz2", "zip", "xz", None],
-    "parquet": ["snappy", "gzip", "brotli", None],
-    "msgpack": ["zlib", "blosc", None],
+    "csv": {
+        "param_name": "compression",
+        "read_with_param": True,
+        "list": ["infer", "gzip", "bz2", "zip", "xz", None],
+    },
+    "pickle": {
+        "param_name": "compression",
+        "read_with_param": True,
+        "list": ["infer", "gzip", "bz2", "zip", "xz", None],
+    },
+    "parquet": {
+        "param_name": "compression",
+        "read_with_param": False,  # Read function don't use compression param
+        "list": ["snappy", "gzip", "brotli", None],
+    },
+    "msgpack": {
+        "param_name": "compress",
+        "read_with_param": False,  # Read function don't use compression param
+        "list": ["zlib", "blosc", None],
+    },
 }
 
 
@@ -109,6 +125,26 @@ def test_write(size, iterations, exclude_formats, test_compress):
 
         out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
+        # Try all compressions
+        if test_compress:
+
+            if extension not in COMPRESSIONS:
+                continue
+
+            # Get name of compression parameter and list of extensions
+            comp_list = COMPRESSIONS[extension]["list"]
+            comp_param_name = COMPRESSIONS[extension]["param_name"]
+
+            for comp in comp_list:
+                name = f"{extension}_{str(comp)}"
+                out[name] = iterate_one_test(
+                    iterations,
+                    extension=name,
+                    func=func,
+                    args=[df, f"{PATH_DATA}data.{extension}_{comp}"],
+                    kwargs={comp_param_name: comp},
+                )
+
     return out
 
 
@@ -138,6 +174,26 @@ def test_read(size, iterations, exclude_formats, test_compress):
 
         out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
+        # Try all compressions
+        if test_compress:
+
+            if extension not in COMPRESSIONS:
+                continue
+
+            # Get name of compression parameter and list of extensions
+            comp_list = COMPRESSIONS[extension]["list"]
+            comp_param_name = COMPRESSIONS[extension]["param_name"]
+            use_param = COMPRESSIONS[extension]["read_with_param"]
+
+            for comp in comp_list:
+                name = f"{extension}_{str(comp)}"
+                out[name] = iterate_one_test(
+                    iterations,
+                    extension=name,
+                    func=func,
+                    args=[f"{PATH_DATA}data.{extension}_{comp}"],
+                    kwargs={comp_param_name: comp} if use_param else {},
+                )
     return out
 
 
@@ -181,7 +237,7 @@ def test_1():
 def test_2():
     """ Run more heavy tests without xlsx extension """
 
-    full_test(1, iterations=100, exclude_formats=["xlsx"])
+    full_test(1, iterations=100, exclude_formats=["xlsx"], test_compress=True)
 
 
 def test_3():
@@ -192,7 +248,6 @@ def test_3():
 
 if __name__ == "__main__":
 
-    full_test(0, iterations=20)
     # test_1()
-    # test_2()
+    test_2()
     # test_3()

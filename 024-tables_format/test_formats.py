@@ -38,6 +38,13 @@ FUNCS = {
     },
 }
 
+COMPRESSIONS = {
+    "csv": ["infer", "gzip", "bz2", "zip", "xz", None],
+    "pickle": ["infer", "gzip", "bz2", "zip", "xz", None],
+    "parquet": ["snappy", "gzip", "brotli", None],
+    "msgpack": ["zlib", "blosc", None],
+}
+
 
 def clean():
     """ Clean previously created files """
@@ -46,7 +53,35 @@ def clean():
             os.remove(f"{PATH_DATA}{name}")
 
 
-def test_write(size, iterations=10, exclude_formats=[]):
+def iterate_one_test(iterations, extension, func, args, kwargs):
+    """
+        Do some iterations for some function
+
+        Args:
+            size:       size of the file to test (0: small, 1: mediumn, 2: big)
+            iterations: number of times to run the test
+            func:       function to test
+            args:       arguments for that function
+            kwargs:     extra keyworded arguments
+    """
+
+    out = []
+
+    for _ in tqdm(range(iterations), desc=f"- {extension:8}", leave=True):
+        try:
+            t0 = time()
+            func(*args, **kwargs)
+
+            # Store time
+            out.append(time() - t0)
+
+        except Exception as e:
+            print(f"- Error with {extension}: {e}")
+
+    return out
+
+
+def test_write(size, iterations, exclude_formats, test_compress):
     """
         Test writting for one file
 
@@ -54,14 +89,15 @@ def test_write(size, iterations=10, exclude_formats=[]):
             size:               size of the file to test (0: small, 1: mediumn, 2: big)
             iterations:         number of times to run the test
             exclude_formats:    formats to exclude in this test
+            test_compress:      if True it will try all compressions
 
         Returns:
-            dictionary with results
+            dictionary with out
     """
 
-    df = pd.read_csv(f"{PATH_DATA}{FILES[size]}.csv")
+    out = {}
 
-    results = {}
+    df = pd.read_csv(f"{PATH_DATA}{FILES[size]}.csv")
 
     for extension, func in tqdm(FUNCS["write"].items(), desc=f"{'write':10}", leave=True):
 
@@ -69,21 +105,14 @@ def test_write(size, iterations=10, exclude_formats=[]):
         if extension in exclude_formats:
             continue
 
-        results[extension] = []
+        args = [df, f"{PATH_DATA}data.{extension}"]
 
-        for _ in tqdm(range(iterations), desc=f"- {extension:8}", leave=True):
-            try:
-                t0 = time()
-                func(df, f"{PATH_DATA}data.{extension}")
-                results[extension].append(time() - t0)
+        out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
-            except Exception as e:
-                print(f"- Error with {extension}: {e}")
-
-    return results
+    return out
 
 
-def test_read(size, iterations=10, exclude_formats=[]):
+def test_read(size, iterations, exclude_formats, test_compress):
     """
         Test read for one file
 
@@ -91,12 +120,13 @@ def test_read(size, iterations=10, exclude_formats=[]):
             size:               size of the file to test (0: small, 1: mediumn, 2: big)
             iterations:         number of times to run the test
             exclude_formats:    formats to exclude in this test
+            test_compress:      if True it will try all compressions
 
         Returns:
-            dictionary with results
+            dictionary with out
     """
 
-    results = {}
+    out = {}
 
     for extension, func in tqdm(FUNCS["read"].items(), desc=f"{'read':10}", leave=True):
 
@@ -104,18 +134,11 @@ def test_read(size, iterations=10, exclude_formats=[]):
         if extension in exclude_formats:
             continue
 
-        results[extension] = []
+        args = [f"{PATH_DATA}data.{extension}"]
 
-        for _ in tqdm(range(iterations), desc=f"- {extension:8}", leave=True):
-            try:
-                t0 = time()
-                func(f"{PATH_DATA}data.{extension}")
-                results[extension].append(time() - t0)
+        out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
-            except Exception as e:
-                print(f"- Error with {extension}: {e}")
-
-    return results
+    return out
 
 
 def store_results(data, size, iterations):
@@ -127,15 +150,15 @@ def store_results(data, size, iterations):
     print(f"\n- Data {PATH_RESULTS}results_s{size}_i{iterations}.yaml stored")
 
 
-def full_test(size, iterations=10, exclude_formats=[]):
+def full_test(size, iterations=10, exclude_formats=[], test_compress=False):
     """ Do both tests and store the results"""
 
     clean()
 
     print(f"\nFULL TEST {size}")
     out = {
-        "write": test_write(size, iterations, exclude_formats),
-        "read": test_read(size, iterations, exclude_formats),
+        "write": test_write(size, iterations, exclude_formats, test_compress),
+        "read": test_read(size, iterations, exclude_formats, test_compress),
     }
 
     # Also get file sizes
@@ -158,7 +181,6 @@ def test_1():
 def test_2():
     """ Run more heavy tests without xlsx extension """
 
-    full_test(0, iterations=500, exclude_formats=["xlsx"])
     full_test(1, iterations=100, exclude_formats=["xlsx"])
 
 
@@ -170,6 +192,7 @@ def test_3():
 
 if __name__ == "__main__":
 
-    test_1()
+    full_test(0, iterations=20)
+    # test_1()
     # test_2()
     # test_3()

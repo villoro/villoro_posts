@@ -20,16 +20,26 @@ PATH_RESULTS = "results/"
 FILES = ["bike_sharing_daily", "cbg_patterns", "checkouts-by-title"]
 
 FUNCS = {
-    "read": {"csv": pd.read_csv, "xlsx": pd.read_excel, "pickle": pd.read_pickle},
+    "read": {
+        "csv": pd.read_csv,
+        "xlsx": pd.read_excel,
+        "pickle": pd.read_pickle,
+        "feather": pd.read_feather,
+        "parquet": pd.read_parquet,
+        "msgpack": pd.read_msgpack,
+    },
     "write": {
         "csv": pd.DataFrame.to_csv,
         "xlsx": pd.DataFrame.to_excel,
         "pickle": pd.DataFrame.to_pickle,
+        "feather": pd.DataFrame.to_feather,
+        "parquet": pd.DataFrame.to_parquet,
+        "msgpack": pd.DataFrame.to_msgpack,
     },
 }
 
-ITERATIONS = {0: 10, 1: 2}
-# ITERATIONS = {0: 100, 1: 10, 2: 4}
+# ITERATIONS = [10, 1]
+ITERATIONS = [100, 10, 1]
 
 
 def clean():
@@ -55,11 +65,11 @@ def test_write(size, iterations=10):
 
     results = {}
 
-    for extension, func in tqdm(FUNCS["write"].items(), desc=f"{'write':10}"):
+    for extension, func in tqdm(FUNCS["write"].items(), desc=f"{'write':10}", leave=True):
 
         results[extension] = []
 
-        for _ in tqdm(range(iterations), desc=f"{extension:10}"):
+        for _ in tqdm(range(iterations), desc=f"- {extension:8}", leave=True):
             t0 = time()
             func(df, f"{PATH_DATA}data.{extension}")
             results[extension].append(time() - t0)
@@ -81,11 +91,11 @@ def test_read(size, iterations=10):
 
     results = {}
 
-    for extension, func in tqdm(FUNCS["read"].items(), desc=f"{'read':10}"):
+    for extension, func in tqdm(FUNCS["read"].items(), desc=f"{'read':10}", leave=True):
 
         results[extension] = []
 
-        for _ in tqdm(range(iterations), desc=f"{extension:10}"):
+        for _ in tqdm(range(iterations), desc=f"- {extension:8}", leave=True):
             t0 = time()
             func(f"{PATH_DATA}data.{extension}")
             results[extension].append(time() - t0)
@@ -110,12 +120,15 @@ def full_test(size, iterations=10):
     print(f"\nFULL TEST {size}")
     out = {"write": test_write(size, iterations), "read": test_read(size, iterations)}
 
+    # Also get file sizes
+    out["file_size"] = {x: os.path.getsize(f"{PATH_DATA}data.{x}") for x in FUNCS["read"].keys()}
+
     store_results(out, size)
 
 
 if __name__ == "__main__":
 
-    full_test(0)
+    # full_test(0)
 
-    # for size, iterations in ITERATIONS.items():
-    #     full_test(size, iterations)
+    for size, iterations in enumerate(ITERATIONS):
+        full_test(size, iterations)

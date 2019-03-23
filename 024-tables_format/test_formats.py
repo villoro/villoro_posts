@@ -121,12 +121,12 @@ def test_write(size, iterations, exclude_formats, test_compress):
         if extension in exclude_formats:
             continue
 
-        args = [df, f"{PATH_DATA}data.{extension}"]
-
-        out[extension] = iterate_one_test(iterations, extension, func, args, {})
+        if not test_compress or extension not in COMPRESSIONS:
+            args = [df, f"{PATH_DATA}data.{extension}"]
+            out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
         # Try all compressions
-        if test_compress:
+        else:
 
             if extension not in COMPRESSIONS:
                 continue
@@ -135,7 +135,7 @@ def test_write(size, iterations, exclude_formats, test_compress):
             comp_list = COMPRESSIONS[extension]["list"]
             comp_param_name = COMPRESSIONS[extension]["param_name"]
 
-            for comp in comp_list:
+            for comp in tqdm(comp_list, desc=f"{extension:10}", leave=True):
                 name = f"{extension}_{str(comp)}"
                 out[name] = iterate_one_test(
                     iterations,
@@ -170,12 +170,12 @@ def test_read(size, iterations, exclude_formats, test_compress):
         if extension in exclude_formats:
             continue
 
-        args = [f"{PATH_DATA}data.{extension}"]
-
-        out[extension] = iterate_one_test(iterations, extension, func, args, {})
+        if not test_compress or extension not in COMPRESSIONS:
+            args = [f"{PATH_DATA}data.{extension}"]
+            out[extension] = iterate_one_test(iterations, extension, func, args, {})
 
         # Try all compressions
-        if test_compress:
+        else:
 
             if extension not in COMPRESSIONS:
                 continue
@@ -185,7 +185,7 @@ def test_read(size, iterations, exclude_formats, test_compress):
             comp_param_name = COMPRESSIONS[extension]["param_name"]
             use_param = COMPRESSIONS[extension]["read_with_param"]
 
-            for comp in comp_list:
+            for comp in tqdm(comp_list, desc=f"{extension:10}", leave=True):
                 name = f"{extension}_{str(comp)}"
                 out[name] = iterate_one_test(
                     iterations,
@@ -211,7 +211,7 @@ def full_test(size, iterations=10, exclude_formats=[], test_compress=False):
 
     clean()
 
-    print(f"\nFULL TEST {size}")
+    print(f"\nFULL TEST. size: {size}, iterations: {iterations}")
     out = {
         "write": test_write(size, iterations, exclude_formats, test_compress),
         "read": test_read(size, iterations, exclude_formats, test_compress),
@@ -220,9 +220,11 @@ def full_test(size, iterations=10, exclude_formats=[], test_compress=False):
     # Also get file sizes
     out["file_size"] = {}
 
-    for x in FUNCS["read"].keys():
-        if x not in exclude_formats:
-            out["file_size"][x] = os.path.getsize(f"{PATH_DATA}data.{x}")
+    for file in os.listdir(PATH_DATA):
+        name, extension = file.split(".")
+
+        if name == "data":
+            out["file_size"][extension] = os.path.getsize(f"{PATH_DATA}{file}")
 
     store_results(out, size, iterations)
 
@@ -235,18 +237,21 @@ def test_1():
 
 
 def test_2():
-    """ Run more heavy tests without xlsx extension """
+    """ Run tests trying all compressions without xlsx extension """
 
-    full_test(1, iterations=100, exclude_formats=["xlsx"], test_compress=True)
+    full_test(1, iterations=5, exclude_formats=["xlsx"], test_compress=True)
 
 
 def test_3():
-    """ Run test with the big dataframe """
+    """ Run test with the big dataframe and trying the compressions """
 
-    full_test(2, iterations=1, exclude_formats=["xlsx"])
+    full_test(2, iterations=1, exclude_formats=["xlsx"], test_compress=True)
 
 
 if __name__ == "__main__":
+
+    # Dummy test
+    # full_test(0, iterations=20, exclude_formats=["xlsx"], test_compress=True)
 
     # test_1()
     test_2()

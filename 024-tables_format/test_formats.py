@@ -245,7 +245,7 @@ def test_2():
 def test_3():
     """ Run test with the big dataframe and trying the compressions """
 
-    full_test(2, iterations=1, exclude_formats=["xlsx"], test_compress=True)
+    full_test(2, iterations=1, exclude_formats=["xlsx", "csv"], test_compress=True)
 
 
 if __name__ == "__main__":
@@ -254,5 +254,5 @@ if __name__ == "__main__":
     # full_test(0, iterations=20, exclude_formats=["xlsx"], test_compress=True)
 
     # test_1()
-    test_2()
-    # test_3()
+    # test_2()
+    test_3()

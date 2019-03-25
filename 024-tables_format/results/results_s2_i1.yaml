@@ -1,0 +1,64 @@
+file_size:
+  feather: 4554008768
+  msgpack_None: 7740933289
+  msgpack_blosc: 6984379399
+  msgpack_zlib: 6978698400
+  parquet_None: 6398804198
+  parquet_brotli: 1673969751
+  parquet_gzip: 2149778143
+  parquet_snappy: 3541236997
+  pickle_None: 6706163596
+  pickle_bz2: 1333398004
+  pickle_gzip: 1943977289
+  pickle_infer: 6706163596
+  pickle_xz: 1039582108
+read:
+  msgpack_None:
+  - 351.70152974128723
+  msgpack_blosc:
+  - 327.2980098724365
+  msgpack_zlib:
+  - 329.18844747543335
+  parquet_None:
+  - 68.7309844493866
+  parquet_brotli:
+  - 55.380908727645874
+  parquet_gzip:
+  - 58.00585579872131
+  parquet_snappy:
+  - 53.134087324142456
+  pickle_None:
+  - 82.65426564216614
+  pickle_bz2:
+  - 309.23990535736084
+  pickle_gzip:
+  - 112.91100668907166
+  pickle_infer:
+  - 87.33713102340698
+  pickle_xz:
+  - 207.36238503456116
+write:
+  msgpack_None:
+  - 379.38303089141846
+  msgpack_blosc:
+  - 300.8278720378876
+  msgpack_zlib:
+  - 332.9850389957428
+  parquet_None:
+  - 161.2092924118042
+  parquet_brotli:
+  - 673.3775858879089
+  parquet_gzip:
+  - 538.887618303299
+  parquet_snappy:
+  - 166.91615843772888
+  pickle_None:
+  - 448.07638144493103
+  pickle_bz2:
+  - 1047.9858129024506
+  pickle_gzip:
+  - 1245.7543051242828
+  pickle_infer:
+  - 347.9575741291046
+  pickle_xz:
+  - 5857.447190284729

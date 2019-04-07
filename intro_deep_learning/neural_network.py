@@ -116,4 +116,8 @@ class NeuralNetwork:
 
     def print_losses(self):
         """ show evolution of training and validation losses """
-        py.iplot([go.Scatter(y=loss, name=name) for name, loss in self.losses.items()])
+
+        data = [go.Scatter(y=loss, name=name) for name, loss in self.losses.items()]
+        layout = go.Layout(title="Training and validation losses evolution by epochs and batches")
+
+        py.iplot(go.Figure(data=data, layout=layout))

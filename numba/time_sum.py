@@ -41,7 +41,7 @@ def test_all(functions=functions, tests=tests, tqdm_f=tqdm):
 
             out[size][name] = timeit(iterations)(func)(m_list)
 
-    with open("results.yaml", "w") as outfile:
+    with open("results/sum.yaml", "w") as outfile:
         yaml.dump(out, outfile, default_flow_style=False)
 
     print("\nAll tests done")

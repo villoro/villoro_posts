@@ -31,7 +31,7 @@ TESTS = [
     (5, 1_000_000_000),  # 1e9
 ]
 
-test_name = "sum"
+TEST_NAME = "sum"
 
 
 def test_all(tqdm_f=tqdm):
@@ -40,8 +40,6 @@ def test_all(tqdm_f=tqdm):
     out = {}
     for iterations, size in tqdm_f(TESTS, desc="iterations"):
 
-        size = int(size)
-
         m_list = np.random.choice(range(10), size=size)
 
         out[size] = {}
@@ -49,7 +47,7 @@ def test_all(tqdm_f=tqdm):
 
             out[size][name] = timeit(iterations)(func)(m_list)
 
-    store_results(out, test_name)
+    store_results(out, TEST_NAME)
 
 
 if __name__ == "__main__":

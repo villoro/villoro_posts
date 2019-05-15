@@ -40,4 +40,4 @@ def store_results(data, test_name):
     with open(f"results/{test_name}.yaml", "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
-    print(f"\nAll tests done fro {test_name}")
+    print(f"\nAll tests done for {test_name}")

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from numba import jit, njit
+from numba import jit, njit, vectorize
 from tqdm import tqdm
 
 from utils import timeit, store_results
@@ -12,8 +12,12 @@ def prepare_dataset(size):
         It will be a dataframe with two columns:
             date: with format YYYY-MM-DD
             time: with format hhmmsscc as integer
+        Creating a big dataframe requires a lot of RAM.
+        I was able to create a 10**7 dataset with my computer (16 GB RAM) but not the 10**8.
     """
-
+    
+    print(f"Creating dataset of order {int(np.log10(size))}")
+    
     # Generate raw data
     data = {
         "year": np.random.choice([str(x) for x in range(2000, 2020)], size),
@@ -169,6 +173,27 @@ def divmod_njit(df):
         )
 
 
+def divmod_vectorize(df):
+    """
+        1. Use divmod to transfom HHMMSSCC to miliseconds integer with vectorize
+        2. Outside the njit function cast date as np.datetime and time to timedelta
+        3. Sum date and time
+    """
+
+    @vectorize(parallel=True)
+    def _fix_time(mtime):
+
+        aux, cent = divmod(mtime[i], 100)
+        aux, seconds = divmod(aux, 100)
+        hours, minutes = divmod(aux, 100)
+
+        return 10 * (cent + 100 * (seconds + 60 * (minutes + 60 * hours)))
+
+        return df["date"].values.astype(np.datetime64) + _fix_time(df["time"].values).astype(
+            "timedelta64[ms]"
+        )
+
+    
 FUNCTIONS = [
     zfill,
     fix_time_individual,
@@ -176,15 +201,16 @@ FUNCTIONS = [
     fix_time_np_datetime,
     np_divmod_jit,
     divmod_njit,
+    divmod_vectorize,
 ]
 
 TESTS = [
     (100, 100),  # 1e2
-    (50, 1_000),  # 1e3
-    (20, 10_000),  # 1e4
-    (15, 100_000),  # 1e5
-    (10, 1_000_000),  # 1e6
-    (8, 10_000_000),  # 1e7
+    (100, 1_000),  # 1e3
+    (100, 10_000),  # 1e4
+    (50, 100_000),  # 1e5
+    (20, 1_000_000),  # 1e6
+    (10, 10_000_000),  # 1e7
     (5, 100_000_000),  # 1e8
 ]
 
@@ -202,7 +228,7 @@ def test_all(tqdm_f=tqdm):
     for iterations, size in tqdm_f(TESTS, desc="iterations"):
 
         out[size] = {}
-        for func in tqdm_f(FUNCTIONS, desc=str(size)):
+        for func in tqdm_f(FUNCTIONS, desc=f"o:{int(np.log10(size))} i:{iterations}"):
 
             out[size][func.__name__] = timeit(iterations)(func)(df.head(size))
 

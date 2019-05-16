@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from numba import jit, njit, vectorize
+from numba import jit, njit, vectorize, int32
 from tqdm import tqdm
 
 from utils import timeit, store_results
@@ -15,9 +15,9 @@ def prepare_dataset(size):
         Creating a big dataframe requires a lot of RAM.
         I was able to create a 10**7 dataset with my computer (16 GB RAM) but not the 10**8.
     """
-    
+
     print(f"Creating dataset of order {int(np.log10(size))}")
-    
+
     # Generate raw data
     data = {
         "year": np.random.choice([str(x) for x in range(2000, 2020)], size),
@@ -159,7 +159,7 @@ def divmod_njit(df):
     @njit
     def _fix_time(mtime):
 
-        time_out = np.empty(mtime.shape[0], dtype=np.int32)
+        time_out = np.empty(mtime.shape)
 
         for i in range(mtime.shape[0]):
             aux, cent = divmod(mtime[i], 100)
@@ -168,9 +168,11 @@ def divmod_njit(df):
 
             time_out[i] = 10 * (cent + 100 * (seconds + 60 * (minutes + 60 * hours)))
 
-        return df["date"].values.astype(np.datetime64) + _fix_time(df["time"].values).astype(
-            "timedelta64[ms]"
-        )
+        return time_out
+
+    return df["date"].values.astype(np.datetime64) + _fix_time(
+        df["time"].values.astype(np.int32)
+    ).astype("timedelta64[ms]")
 
 
 def divmod_vectorize(df):
@@ -180,20 +182,20 @@ def divmod_vectorize(df):
         3. Sum date and time
     """
 
-    @vectorize(parallel=True)
+    @vectorize([int32(int32)])
     def _fix_time(mtime):
 
-        aux, cent = divmod(mtime[i], 100)
+        aux, cent = divmod(mtime, 100)
         aux, seconds = divmod(aux, 100)
         hours, minutes = divmod(aux, 100)
 
         return 10 * (cent + 100 * (seconds + 60 * (minutes + 60 * hours)))
 
-        return df["date"].values.astype(np.datetime64) + _fix_time(df["time"].values).astype(
-            "timedelta64[ms]"
-        )
+    return df["date"].values.astype(np.datetime64) + _fix_time(
+        df["time"].values.astype(np.int32)
+    ).astype("timedelta64[ms]")
 
-    
+
 FUNCTIONS = [
     zfill,
     fix_time_individual,

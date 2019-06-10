@@ -13,14 +13,14 @@ import utilities as u
 from sql import insert_into_mysql
 
 
-log = u.ulog.set_logger(__file__)
+log = u.set_logger(__file__)
 
 
 def get_ga_service(key_file_location=None):
     """ Connect to GA API service"""
 
     if key_file_location is None:
-        key_file_location = c.io.FILE_GA_KEY
+        key_file_location = c.FILE_GA_KEY
 
     scope = "https://www.googleapis.com/auth/analytics.readonly"
 
@@ -32,7 +32,7 @@ def get_ga_service(key_file_location=None):
     return build("analytics", "v3", credentials=credentials)
 
 
-def get_ga_df(country, query_data, end=date.today(), service=None):
+def get_ga_df(query_data, end=date.today(), service=None):
     """ Retrive GA data as dataframe """
 
     if service is None:
@@ -41,16 +41,16 @@ def get_ga_df(country, query_data, end=date.today(), service=None):
     dimensions = query_data["dimensions"].keys()
     metrics = query_data["metrics"].keys()
 
-    start = end - timedelta(c.google.TIMEWINDOW)
+    start = end - timedelta(c.TIMEWINDOW)
 
     # Query the API
     kwa = {
-        "ids": "ga:{}".format(c.google.PROFILES[country]),
+        "ids": "ga:{}".format(c.PROFILE),
         "start_date": "{:%Y-%m-%d}".format(start),
         "end_date": "{:%Y-%m-%d}".format(end),
         "metrics": ",".join(metrics),
         "dimensions": ",".join(dimensions),
-        "max_results": c.google.MAX_RESULTS,
+        "max_results": c.MAX_RESULTS,
     }
     data = service.data().ga().get(**kwa).execute()
 
@@ -73,9 +73,9 @@ def get_ga_df(country, query_data, end=date.today(), service=None):
 
     # Transform types
     for x in ["dimensions", "metrics"]:
-        df = u.df.fix_types(df, query_data[x].values())
+        df = u.fix_types(df, query_data[x].values())
 
-    log.info("Data from %s (id: #%s) read" % (country, c.google.PROFILES[country]))
+    log.info("Data read")
 
     return df
 
@@ -83,19 +83,17 @@ def get_ga_df(country, query_data, end=date.today(), service=None):
 def do_etl():
     """ Reads from GA, transforms the data and loads into mysql """
 
-    for country in c.google.PROFILES.keys():  # pylint: disable=C0201
+    time0 = time()
 
-        time0 = time()
+    for tablename, data in c.QUERY_DATA.items():
 
-        for tablename, data in c.google.QUERY_DATA.items():
+        # Retrive data from GA API
+        df = get_ga_df(data)
 
-            # Retrive data from GA API
-            df = get_ga_df(country, data)
+        # Insert data into mysql
+        insert_into_mysql(df, tablename)
 
-            # Insert data into mysql
-            insert_into_mysql(df, tablename.format(country))
-
-        log.info("%s data imported" % country, time=time() - time0)
+    log.info("Data imported", time=time() - time0)
 
 
 def import_old_stats(end=date.today()):
@@ -105,19 +103,19 @@ def import_old_stats(end=date.today()):
     while end > date(2017, 1, 1):
 
         time0 = time()
-        start = end - timedelta(c.google.TIMEWINDOW)
+        start = end - timedelta(c.TIMEWINDOW)
 
         log.info(f"Importing data from {start:%Y-%m-%d} to {end:%Y-%m-%d}")
-        for country in c.google.PROFILES.keys():  # pylint: disable=C0201
-            for tablename, data in c.google.QUERY_DATA.items():
 
-                # Retrive data from GA API
-                df = get_ga_df(country, data, end=end)
+        for tablename, data in c.QUERY_DATA.items():
 
-                # Insert data into mysql
-                insert_into_mysql(df, tablename.format(country))
+            # Retrive data from GA API
+            df = get_ga_df(data, end=end)
 
-        end -= timedelta(int(c.google.TIMEWINDOW) + 1)
+            # Insert data into mysql
+            insert_into_mysql(df, tablename)
+
+        end -= timedelta(int(c.TIMEWINDOW) + 1)
         log.info("Data imported", time=time() - time0)
 
 

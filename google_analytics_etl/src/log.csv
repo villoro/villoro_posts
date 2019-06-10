@@ -1,0 +1,4 @@
+Module;Type;Date;Details;Time;Error Type;Error Details;Error Line
+./etl;INFO;2019-06-10 11:50:53;Data read
+./etl;INFO;2019-06-10 11:50:55;Data read
+./etl;INFO;2019-06-10 11:50:55;Data imported;3,404599905014038

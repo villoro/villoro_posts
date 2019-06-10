@@ -16,7 +16,7 @@ FILE_LOG = PATH_LOG + "log.log"
 MAX_RESULTS = 100_000  # 100_000 is the GA api limit
 TIMEWINDOW = 7  # In days
 
-PROFILE = "116253568"  # CHANGE THAT
+PROFILE = "172116641"  # CHANGE THAT
 
 QUERY_DATA = {
     "traffic_google": {

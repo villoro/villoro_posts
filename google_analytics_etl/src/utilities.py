@@ -1,8 +1,15 @@
 """ Utilities """
 
 import pandas as pd
+from v_log import VLogger
 
 import constants as c
+
+
+def set_logger(name):
+    """ Create a logging object """
+
+    return VLogger(name)
 
 
 def fix_types(df_in, iterable_types):
@@ -29,7 +36,7 @@ def fix_types(df_in, iterable_types):
 
         # Transform float
         if col_type == float:
-            df[col] = df[col].apply(col_type).apply(lambda x: round(x, c.sql.NUM_DECIMALS))
+            df[col] = df[col].apply(col_type).apply(lambda x: round(x, c.NUM_DECIMALS))
 
         # Transform int
         elif col_type == int:

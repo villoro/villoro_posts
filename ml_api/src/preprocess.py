@@ -4,6 +4,8 @@
 
 import pandas as pd
 
+FEATURES_ORIGIN = ["date", "weather", "temp", "hum", "windspeed"]
+
 
 def add_dummies(df_in):
     """ Create dummies from categorical columns and drop used ones """
@@ -32,3 +34,27 @@ def preprocess(df_in):
     df = add_dummies(df)
 
     return df
+
+
+def create_dataframe_from_json(data):
+    """ Creates a dataframe from a json """
+
+    try:
+        df = pd.DataFrame(data)
+
+    # If data is not parsable to a dataframe
+    except ValueError as e:
+        print(e)
+        print(data)
+        return None
+
+    for x in FEATURES_ORIGIN:
+        if x not in df.columns:
+            return None
+
+    # Order columns
+    df = df[FEATURES_ORIGIN]
+
+    df["date"] = pd.to_datetime(df["date"])
+
+    return df.set_index("date")

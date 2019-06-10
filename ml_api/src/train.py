@@ -25,7 +25,7 @@ def read_training_data():
         "cnt": "cnt",
     }
 
-    df = pd.read_csv("bike_sharing_hourly.csv", usecols=origin_features + target)
+    df = pd.read_csv("../data/bike_sharing_hourly.csv", usecols=origin_features + target)
 
     # Set date as index
     dates = pd.to_datetime(df["dteday"].apply(str) + " " + df["hr"].apply(str) + ":00")

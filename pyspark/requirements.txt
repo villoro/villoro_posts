@@ -1,0 +1,5 @@
+joblibspark
+scikit-learn >= 0.22
+plotly >= 4
+pyspark >= 2.4.4
+v_time >= 1.1

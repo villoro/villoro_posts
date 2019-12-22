@@ -39,6 +39,9 @@ dist/
 # Executables
 *.exe
 
+# h2o logs
+*/h2ologs
+*/*/h2ologs
 
 # --------------------- PERSONAL EXCLUSIONS -----------------------------------
 # Data folders

@@ -40,7 +40,7 @@ class StandardTask(luigi.Task):
         # If task fails write a file with different name
         # This allows re-runs to retry the failed task while keeping info about fails
         if not success:
-            uri += "_fail_" + datetime.now().strftime("%Y%m%d_%H%M%S")
+            uri += datetime.now().strftime("_fail_%Y%m%d_%H%M%S")
 
         return f"{uri}.yaml"
 

@@ -5,7 +5,7 @@ import oyaml as yaml
 from datetime import date, datetime
 
 
-PATH_LUIGI_YAML = "runs/{:%Y%m%d}/{}.yaml"
+PATH_LUIGI_YAML = "runs/"
 
 
 class StandardTask(luigi.Task):
@@ -31,10 +31,21 @@ class StandardTask(luigi.Task):
         self.name = self.__class__.__name__
         super().__init__(*args, **kwargs)
 
-    def output(self):
+    def output_filename(self, success=True):
+        """ Get output filename """
 
         # output will be a yaml file inside a folder with date
-        return luigi.LocalTarget(PATH_LUIGI_YAML.format(self.mdate, self.name))
+        uri = f"{PATH_LUIGI_YAML}{self.mdate:%Y%m%d}/{self.name}"
+
+        # If task fails write a file with different name
+        # This allows re-runs to retry the failed task while keeping info about fails
+        if not success:
+            uri += "_fail_" + datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        return f"{uri}.yaml"
+
+    def output(self, success=True):
+        return luigi.LocalTarget(self.output_filename())
 
     def save_result(self, success=True, **kwa):
         """ Stores result as a yaml file """
@@ -48,7 +59,7 @@ class StandardTask(luigi.Task):
         self.t_data.update(**kwa)
 
         # Export them as an ordered yaml
-        with self.output().open("w") as stream:
+        with open(self.output_filename(success), "w") as stream:
             yaml.dump(self.t_data, stream)
 
     def on_failure(self, exception):
@@ -71,7 +82,7 @@ class StandardTask(luigi.Task):
                 module.main(mdate)
         """
 
-        # Run the task and store the resutls
+        # By default run the 'main' function of the asked module
         module = __import__(self.module)
         module.main(self.mdate.strftime("%Y_%m_%d"))
 
@@ -81,6 +92,6 @@ class StandardTask(luigi.Task):
         self.start_time = time.time()
         self.t_data["start_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+        # Run the task and store the resutls
         self.run_std()
-
-        return self.save_result()
+        self.save_result()

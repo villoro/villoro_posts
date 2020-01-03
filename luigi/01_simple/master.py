@@ -10,7 +10,7 @@ class RegisterTask(luigi.Task):
     def run(self):
         from register import do
 
-        do(mdate.strftime("%Y_%m_%d"))
+        do(self.mdate.strftime("%Y_%m_%d"))
 
     def output(self):
         return luigi.LocalTarget(self.mdate.strftime("output/%Y_%m_%d.txt"))
@@ -23,7 +23,7 @@ class ReportTask(luigi.Task):
     def run(self):
         from report import do
 
-        do(mdate.strftime("%Y_%m_%d"))
+        do(self.mdate.strftime("%Y_%m_%d"))
 
     def output(self):
         return luigi.LocalTarget(self.mdate.strftime("output/%Y_%m_%d.html"))

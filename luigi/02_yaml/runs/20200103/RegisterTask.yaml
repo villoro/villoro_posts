@@ -1,0 +1,6 @@
+name: RegisterTask
+start_time: '2020-01-03 13:58:51'
+end_time: '2020-01-03 13:58:51'
+duration: 0.003989696502685547
+success: false
+exception: AttributeError("'datetime.datetime' object has no attribute 'worngtime'")

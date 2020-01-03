@@ -8,9 +8,9 @@ class RegisterTask(luigi.Task):
     mdate = luigi.DateParameter(default=date.today())
 
     def run(self):
-        from register import do
+        from register import main
 
-        do(self.mdate.strftime("%Y_%m_%d"))
+        main(self.mdate.strftime("%Y_%m_%d"))
 
     def output(self):
         return luigi.LocalTarget(self.mdate.strftime("output/%Y_%m_%d.txt"))
@@ -21,9 +21,9 @@ class ReportTask(luigi.Task):
     mdate = luigi.DateParameter(default=date.today())
 
     def run(self):
-        from report import do
+        from report import main
 
-        do(self.mdate.strftime("%Y_%m_%d"))
+        main(self.mdate.strftime("%Y_%m_%d"))
 
     def output(self):
         return luigi.LocalTarget(self.mdate.strftime("output/%Y_%m_%d.html"))

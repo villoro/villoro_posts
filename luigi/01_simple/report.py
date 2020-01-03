@@ -2,7 +2,7 @@ from datetime import date, datetime
 from markdown import markdown
 
 
-def do(filename):
+def main(filename):
 
     uri = f"output/{filename}.html"
 
@@ -19,4 +19,4 @@ def do(filename):
 
 
 if __name__ == "__main__":
-    do(date.today().strftime("%Y_%m_%d"))
+    main(date.today().strftime("%Y_%m_%d"))

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 
-def do(filename):
+def main(filename):
 
     uri = f"output/{filename}.txt"
 
@@ -12,4 +12,4 @@ def do(filename):
 
 
 if __name__ == "__main__":
-    do(date.today().strftime("%Y_%m_%d"))
+    main(date.today().strftime("%Y_%m_%d"))

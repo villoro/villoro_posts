@@ -1,8 +1,9 @@
+import os
 import time
+from datetime import date, datetime
+
 import luigi
 import oyaml as yaml
-
-from datetime import date, datetime
 
 
 PATH_LUIGI_YAML = "runs/"
@@ -35,7 +36,13 @@ class StandardTask(luigi.Task):
         """ Get output filename """
 
         # output will be a yaml file inside a folder with date
-        uri = f"{PATH_LUIGI_YAML}{self.mdate:%Y%m%d}/{self.name}"
+        uri = f"{PATH_LUIGI_YAML}{self.mdate:%Y%m%d}/"
+
+        # make sure folder exists
+        os.makedirs(uri, exist_ok=True)
+
+        # add task name
+        uri += self.name
 
         # If task fails write a file with different name
         # This allows re-runs to retry the failed task while keeping info about fails

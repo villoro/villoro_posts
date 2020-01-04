@@ -1,6 +1,5 @@
-import luigi
-
 from datetime import date, datetime
+import luigi
 
 
 class RegisterTask(luigi.Task):

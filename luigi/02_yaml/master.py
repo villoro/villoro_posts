@@ -1,6 +1,6 @@
 import luigi
 
-from luigi_default import StandardTask
+from luigi_default import StandardTask, date
 
 
 class RegisterTask(StandardTask):
@@ -11,10 +11,9 @@ class ReportTask(StandardTask):
     module = "report"
 
 
-class DoAllTask(StandardTask):
-    def run_std(self):
-        with open(self.mdate.strftime("output/%Y_%m_%d.info"), "w") as stream:
-            stream.write("Done")
+class DoAllTask(luigi.WrapperTask):
+
+    mdate = luigi.DateParameter(default=date.today())
 
     def requires(self):
         return RegisterTask(self.mdate), ReportTask(self.mdate)

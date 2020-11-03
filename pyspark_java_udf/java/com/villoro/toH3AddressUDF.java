@@ -11,6 +11,7 @@ public class toH3AddressUDF implements UDF3<Double, Double, Integer, String> {
     @Override
     public String call(Double longitude, Double latitude, Integer resolution) throws Exception {
 
+        // Lazy instantiation
         if (h3 == null) {
             try {
                 h3 = H3Core.newInstance();
@@ -20,6 +21,7 @@ public class toH3AddressUDF implements UDF3<Double, Double, Integer, String> {
             }
         }
 
+        // Check that coordinates are
         if (longitude == null || latitude == null) {
             return null;
         } else {

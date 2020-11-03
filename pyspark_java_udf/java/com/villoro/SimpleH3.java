@@ -10,6 +10,7 @@ class SimpleH3
 
     public static String toH3Address(Double longitude, Double latitude, int resolution){
         
+        // Lazy instantiation
         if (h3 == null) {
             try {
                 h3 = H3Core.newInstance();
@@ -19,6 +20,7 @@ class SimpleH3
             }
         }
 
+        // Check that coordinates are
         if (longitude == null || latitude == null) {
             return null;
         } else {

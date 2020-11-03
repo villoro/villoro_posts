@@ -1,6 +1,5 @@
 import java.io.IOException;
 import com.uber.h3core.H3Core;
-import org.apache.spark.sql.api.java.UDF2;
 
 class SimpleH3
 { 
@@ -14,13 +13,3 @@ class SimpleH3
         }
     }
 } 
-
-public class get_h9 implements UDF2<Float, Float, String> {
-
-    static H3Core h3 = H3Core.newInstance();
-
-    @Override
-    public String call(Float longitude, Float latitude) throws Exception {
-        return h3.geoToH3Address(longitude, latitude, 9);
-    }
-}

@@ -1,11 +1,14 @@
-package com.villoro.simpleH3;
+package com.villoro;
 
 import java.io.IOException;
 import com.uber.h3core.H3Core;
+import org.apache.spark.sql.api.java.UDF3;
 
-class H3Address
-{ 
-    public static String toH3Address(Double longitude, Double latitude, int resolution){
+public class toH3AddressUDF implements UDF3<Double, Double, Integer, String> {
+
+    @Override
+    public String call(Double longitude, Double latitude, Integer resolution) throws Exception {
+
         if (longitude == null || latitude == null) {
             return null;
         }
@@ -18,4 +21,4 @@ class H3Address
             return null;
         }
     }
-} 
+}

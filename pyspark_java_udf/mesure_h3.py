@@ -10,10 +10,8 @@ from pyspark.sql import SparkSession
 
 from py4j.java_gateway import java_import
 
+from utils import store_results
 from utils import timeit
-
-TESTS = [3, 4, 5]
-
 
 spark = (
     SparkSession.builder.appName("test")
@@ -51,21 +49,48 @@ def test_java(order):
     )
 
 
-FUNCTIONS = [("python", test_python), ("java", test_java)]
+# fmt: off
+TESTS = {
+    "python": {
+        "function": test_python,
+        "tests": [
+            (11, 3),
+            (10, 4),
+            (10, 5),
+            (10, 6),
+            (5, 7),
+            (2, 8),
+        ],
+    },
+    "java": {
+        "function": test_java,
+        "tests": [
+            (11, 3),
+            (10, 4),
+            (10, 5),
+            (10, 6),
+            (5, 7),
+            (2, 8),
+        ],
+    },
+}
+# fmt: on
 
 
-def test_all(tqdm_f=tqdm):
+def test_all():
     """ Test all combinations """
 
-    out = {}
-    for order in tqdm_f(TESTS, desc="iterations"):
+    for name, data in TESTS.items():
 
-        out[order] = {}
-        for name, func in tqdm_f(FUNCTIONS, desc=f"order_{order}"):
+        print(f"\nTESTING '{name.upper()}'")
+        func = data["function"]
 
-            out[order][name] = timeit(func, order=order)
+        out = {}
+        for n_iterations, order in data["tests"]:
+            print(f"- Test order {order}")
+            out[f"order_{order}"] = timeit(func, n_iterations=n_iterations, order=order)
 
-    store_results(out, "h3")
+        store_results(out, name)
 
 
 if __name__ == "__main__":

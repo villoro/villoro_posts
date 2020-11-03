@@ -25,18 +25,20 @@ spark = (
 
 
 @F.udf(T.StringType())
-def get_h8_py(lat, lon):
-    if lat is not None and lon is not None:
-        return h3.geo_to_h3(lat, lon, 8)
+def get_h3_py(latitude, longitude, resolution):
+    if latitude is None or longitude is None:
+        return None
+
+    return h3.geo_to_h3(latitude, longitude, resolution)
 
 
-spark.udf.registerJavaFunction("get_h8_java", "com.villoro.simpleH3.get_h8", T.StringType())
+spark.udf.registerJavaFunction("get_h3_java", "com.villoro.toH3AddressUDF", T.StringType())
 
 
 def test_python(order):
     (
         spark.read.parquet(f"data/dataset_{order}")
-        .withColumn("h8", get_h8_py("latitude", "longitude"))
+        .withColumn("h8", get_h3_py("latitude", "longitude", F.lit(8)))
         .write.parquet("data/output", mode="overwrite")
     )
 
@@ -44,7 +46,7 @@ def test_python(order):
 def test_java(order):
     (
         spark.read.parquet(f"data/dataset_{order}")
-        .withColumn("h8", F.expr("get_h8_java(latitude, longitude)"))
+        .withColumn("h8", F.expr("get_h3_java(latitude, longitude, 8)"))
         .write.parquet("data/output", mode="overwrite")
     )
 

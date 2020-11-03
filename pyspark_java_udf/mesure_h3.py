@@ -30,7 +30,7 @@ def get_h8_py(lat, lon):
         return h3.geo_to_h3(lat, lon, 8)
 
 
-spark.udf.registerJavaFunction("get_h8_java", "get_h8", T.StringType())
+spark.udf.registerJavaFunction("get_h8_java", "com.villoro.simpleH3.get_h8", T.StringType())
 
 
 def test_python(order):

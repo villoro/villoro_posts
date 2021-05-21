@@ -60,7 +60,7 @@ def pyarrow_parquet_ds_read(path, p_filter=False):
 
     kwa = {"filters": [(f"p_{PARTITION_COL}", ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
-    df = dataset.read_pandas().to_pandas(use_threads=True)
+    df = dataset.read_pandas().to_pandas()
 
     return df.shape
 

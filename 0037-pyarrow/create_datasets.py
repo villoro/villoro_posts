@@ -4,9 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 PATH_CSV = "data/US_Accidents_Dec20_Updated.csv"
-PATH_PARQUET_0 = "data/accidents_0.parquet"
-PATH_PARQUET_1 = "data/accidents_1"
-PATH_PARQUET_2 = "data/accidents_2"
+PATH_PARQUET = "data/accidents"
 
 
 def transform_to_parquet():
@@ -24,12 +22,13 @@ def transform_to_parquet():
         df[x] = pd.to_datetime(df[x]).astype("datetime64[s]")
 
     # Add partition column
-    df["p_creation_month"] = df["start_time"].to_numpy().astype("datetime64[M]")
-    df["creation_month"] = df["p_creation_month"]
+    df["creation_month"] = df["start_time"].to_numpy().astype("datetime64[M]")
+
+    path = f"{PATH_PARQUET}_0"
+    os.makedirs(path, exist_ok=True)
 
     print("Exporting 1/3")
-
-    df.to_parquet(PATH_PARQUET_0)
+    df.to_parquet(f"{path}/0001.parquet")
 
     return df
 
@@ -37,27 +36,23 @@ def transform_to_parquet():
 def export_one_file_per_partition(df_in):
     """ Create one file per partition """
 
-    for month, df in tqdm(df_in.groupby("p_creation_month"), desc="Export 2/3"):
+    for month, df in tqdm(df_in.groupby("creation_month"), desc="Export 2/3"):
         # Create the folder
-        path = f"{PATH_PARQUET_1}/p_creation_month={month:%Y-%m}"
+        path = f"{PATH_PARQUET}_1/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
 
-        # Don't include the partition column
-        df = df.drop(columns=["p_creation_month"])
         df.to_parquet(f"{path}/0001.parquet")
 
 
 def export_multiple_files_per_partition(df_in):
     """ Create one file per partition """
 
-    for month, df in tqdm(df_in.groupby("p_creation_month"), desc="Export 3/3"):
+    for month, df in tqdm(df_in.groupby("creation_month"), desc="Export 3/3"):
         # Create the folder
-        path = f"{PATH_PARQUET_2}/p_creation_month={month:%Y-%m}"
+        path = f"{PATH_PARQUET}_2/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
 
         for i, (_, df_out) in enumerate(df.groupby("state")):
-            # Don't include the partition column
-            df_out = df_out.drop(columns=["p_creation_month"])
             df_out.to_parquet(f"{path}/{str(i).zfill(4)}.parquet")
 
 

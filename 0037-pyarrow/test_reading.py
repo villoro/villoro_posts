@@ -5,9 +5,7 @@ import pandas as pd
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
 
-from create_datasets import PATH_PARQUET_0
-from create_datasets import PATH_PARQUET_1
-from create_datasets import PATH_PARQUET_2
+from create_datasets import PATH_PARQUET
 from utils import store_results
 from utils import timeit
 
@@ -88,9 +86,9 @@ def test_all(tqdm_f=tqdm):
     """ Test all combinations """
 
     out = {}
-    for i, path in enumerate([PATH_PARQUET_1, PATH_PARQUET_2]):
+    for i in range(3):
         for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}"):
-            out[f"{func.__name__}_{i}"] = timeit(ITERATIONS)(func)(path)
+            out[f"{func.__name__}_{i}"] = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}")
 
     store_results(out, TEST_NAME)
 

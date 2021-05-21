@@ -36,9 +36,7 @@ def transform_to_parquet():
 def export_one_file_per_partition(df_in):
     """ Create one file per partition """
 
-    print("Exporting 2/3")
-
-    for month, df in tqdm(df_in.groupby("p_creation_month")):
+    for month, df in tqdm(df_in.groupby("p_creation_month"), desc="Export 2/3"):
         # Create the folder
         path = f"{PATH_PARQUET_1}/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
@@ -49,9 +47,7 @@ def export_one_file_per_partition(df_in):
 def export_multiple_files_per_partition(df_in):
     """ Create one file per partition """
 
-    print("Exporting 3/3")
-
-    for month, df in tqdm(df_in.groupby("p_creation_month")):
+    for month, df in tqdm(df_in.groupby("p_creation_month"), desc="Export 3/3"):
         # Create the folder
         path = f"{PATH_PARQUET_2}/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)

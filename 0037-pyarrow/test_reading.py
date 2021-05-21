@@ -1,6 +1,8 @@
 from os import walk
-from tqdm import tqdm
 
+import numpy as np
+from tqdm import tqdm
+from datetime import datetime
 import pandas as pd
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
@@ -67,7 +69,9 @@ def pyarrow_ds_read(path, p_filter=False):
 
     dataset = ds.dataset(path, format="parquet", partitioning="hive")
     if p_filter:
-        df = dataset.to_table(filter=ds.field(f"p_{PARTITION_COL}") >= FILTER_VAL)
+        # otherwise, it gives error
+        filter_date = np.datetime64(datetime.strptime(FILTER_VAL,"%Y-%m"))
+        df = dataset.to_table(filter=ds.field(PARTITION_COL) >= filter_date)
     else:
         df = dataset.to_table().to_pandas()
 

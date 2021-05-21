@@ -1,0 +1,48 @@
+pandas_read_0_False:
+- 5.130626871003187
+pandas_read_0_True:
+- 6.063392123003723
+pandas_read_1_False:
+- 4.421217955998145
+pandas_read_1_True:
+- 5.15691032599716
+pandas_read_2_False:
+- 19.209308591998706
+pandas_read_2_True:
+- 20.750867085997015
+pyarrow_ds_read_0_False:
+- 5.810813685005996
+pyarrow_ds_read_0_True:
+- 1.9724948989969562
+pyarrow_ds_read_1_False:
+- 3.8132748909993097
+pyarrow_ds_read_1_True:
+- 0.24420415500208037
+pyarrow_ds_read_2_False:
+- 6.284322677995078
+pyarrow_ds_read_2_True:
+- 1.955998573001125
+pyarrow_parquet_ds_read_0_False:
+- 4.924121830998047
+pyarrow_parquet_ds_read_0_True:
+- 3.9370936269988306
+pyarrow_parquet_ds_read_1_False:
+- 3.8400703910010634
+pyarrow_parquet_ds_read_1_True:
+- 0.21783636199688772
+pyarrow_parquet_ds_read_2_False:
+- 7.570722851996834
+pyarrow_parquet_ds_read_2_True:
+- 0.2732510240020929
+pyarrow_single_read_0_False:
+- 6.0174484140006825
+pyarrow_single_read_0_True:
+- 5.645339865004644
+pyarrow_single_read_1_False:
+- 4.337590169998293
+pyarrow_single_read_1_True:
+- 5.158114589001343
+pyarrow_single_read_2_False:
+- 19.37046123300388
+pyarrow_single_read_2_True:
+- 20.163952472998062

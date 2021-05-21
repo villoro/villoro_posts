@@ -11,7 +11,7 @@ from utils import timeit
 
 TEST_NAME = "reading"
 
-PARTITION_COL = "p_creation_month"
+PARTITION_COL = "creation_month"
 FILTER_VAL = "2020-12"
 
 ITERATIONS = 1
@@ -56,7 +56,7 @@ def pyarrow_single_read(path, p_filter=False):
 
 def pyarrow_parquet_ds_read(path, p_filter=False):
 
-    kwa = {"filters": [(PARTITION_COL, ">=", FILTER_VAL)]} if p_filter else {}
+    kwa = {"filters": [(f"p_{PARTITION_COL}", ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
     df = dataset.read_pandas().to_pandas()
 
@@ -67,7 +67,7 @@ def pyarrow_ds_read(path, p_filter=False):
 
     dataset = ds.dataset(path, format="parquet", partitioning="hive")
     if p_filter:
-        df = dataset.to_table(filter=ds.field(PARTITION_COL) >= FILTER_VAL)
+        df = dataset.to_table(filter=ds.field(f"p_{PARTITION_COL}") >= FILTER_VAL)
     else:
         df = dataset.to_table().to_pandas()
 

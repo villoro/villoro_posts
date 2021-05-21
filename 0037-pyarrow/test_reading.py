@@ -60,7 +60,7 @@ def pyarrow_parquet_ds_read(path, p_filter=False):
 
     kwa = {"filters": [(f"p_{PARTITION_COL}", ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
-    df = dataset.read_pandas().to_pandas()
+    df = dataset.read_pandas().to_pandas(use_threads=True)
 
     return df.shape
 
@@ -69,12 +69,13 @@ def pyarrow_ds_read(path, p_filter=False):
 
     dataset = ds.dataset(path, format="parquet", partitioning="hive")
     if p_filter:
-        # otherwise, it gives error
+        # cast the type, otherwise it gives error
+        # and it is not using partition column but column from inside dataset
         filter_date = np.datetime64(datetime.strptime(FILTER_VAL,"%Y-%m"))
-        df = dataset.to_table(filter=ds.field(PARTITION_COL) >= filter_date)
+        table = dataset.to_table(filter=ds.field(PARTITION_COL) >= filter_date)
     else:
-        df = dataset.to_table().to_pandas()
-
+        table = dataset.to_table()
+    df = table.to_pandas(use_threads=True)
     return df.shape
 
 
@@ -90,8 +91,8 @@ def test_all(tqdm_f=tqdm):
     """ Test all combinations """
 
     out = {}
-    for i in range(3):
-        for fil in [False, True]:
+    for fil in [False, True]:
+        for i in range(3):
             for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}_{fil}"):
                 out[f"{func.__name__}_{i}_{fil}"] = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}", fil)
 

@@ -1,17 +1,15 @@
-import re
-import os.path
-from os import listdir, walk
-from os.path import isfile, join
-import pandas as pd
+from os import walk
 from tqdm import tqdm
+
+import pandas as pd
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
-from create_datasets import (
-    PATH_PARQUET_0,
-    PATH_PARQUET_1,
-    PATH_PARQUET_2
-)
-from utils import timeit, store_results
+
+from create_datasets import PATH_PARQUET_0
+from create_datasets import PATH_PARQUET_1
+from create_datasets import PATH_PARQUET_2
+from utils import store_results
+from utils import timeit
 
 TEST_NAME = "reading"
 
@@ -20,7 +18,6 @@ FILTER_VAL = "2020-12"
 
 ITERATIONS = 1
 
-REGEX = r"\d{4}-\d{2}-\d{2}"
 
 def get_file_path(path):
     parquet_files = []
@@ -37,10 +34,11 @@ def panda_read(path, p_filter=False):
         df = pd.read_parquet(file)
         dfs.append(df)
     df = pd.concat(dfs)
+
     if p_filter:
         df = df[df[PARTITION_COL] >= FILTER_VAL]
-    print(df.shape)
-    return df
+
+    return df.shape
 
 
 def pyarrow_single_read(path, p_filter=False):
@@ -51,30 +49,26 @@ def pyarrow_single_read(path, p_filter=False):
     df = pd.concat(dfs)
     if p_filter:
         df = df[df[PARTITION_COL] >= FILTER_VAL]
-    print(df.shape)
-    return df
+
+    return df.shape
 
 
 def pyarrow_parquet_ds_read(path, p_filter=False):
     kwa = {"filters": [(PARTITION_COL, ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
     df = dataset.read_pandas().to_pandas()
-    print(df.shape)
-    return df
+
+    return df.shape
 
 
 def pyarrow_ds_read(path, p_filter=False):
-    dataset = ds.dataset(
-        path, format="parquet", partitioning="hive"
-    )
+    dataset = ds.dataset(path, format="parquet", partitioning="hive")
     if p_filter:
-        df = dataset.to_table(
-            filter=ds.field(PARTITION_COL) >= FILTER_VAL)
+        df = dataset.to_table(filter=ds.field(PARTITION_COL) >= FILTER_VAL)
     else:
         df = dataset.to_table().to_pandas()
-    print(df.shape)
-    return df
 
+    return df.shape
 
 
 FUNCTIONS = [
@@ -89,7 +83,7 @@ def test_all(tqdm_f=tqdm):
     """ Test all combinations """
     out = {}
     for i, path in enumerate([PATH_PARQUET_1, PATH_PARQUET_2]):
-        for func in tqdm_f(FUNCTIONS,desc=f"dataset {i}"):
+        for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}"):
             out[f"{func.__name__}_{i}"] = timeit(ITERATIONS)(func)(path)
 
     store_results(out, TEST_NAME)

@@ -25,6 +25,9 @@ def transform_to_parquet():
     # Add partition column
     df["creation_month"] = df["start_time"].to_numpy().astype("datetime64[M]")
 
+    # Drop unuseful column that can give problems at reading (nullabe vs no nullable)
+    df = df.drop(columns=["weather_condition"])
+
     path = f"{PATH_PARQUET}_0"
     os.makedirs(path, exist_ok=True)
 

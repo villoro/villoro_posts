@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+from loguru import logger as log
 from tqdm import tqdm
 
 PATH_CSV = "data/US_Accidents_Dec20_Updated.csv"
@@ -10,7 +11,7 @@ PATH_PARQUET = "data/accidents"
 def transform_to_parquet():
     """ Read the csv and export it as a parquet file """
 
-    print("Reading data")
+    log.info("Reading data")
 
     df = pd.read_csv(PATH_CSV, index_col=0, parse_dates=True)
     df.columns = [x.lower() for x in df.columns]
@@ -27,7 +28,7 @@ def transform_to_parquet():
     path = f"{PATH_PARQUET}_0"
     os.makedirs(path, exist_ok=True)
 
-    print("Exporting 1/3")
+    log.info("Exporting 1/3")
     df.to_parquet(f"{path}/0001.parquet")
 
     return df
@@ -36,7 +37,9 @@ def transform_to_parquet():
 def export_one_file_per_partition(df_in):
     """ Create one file per partition """
 
-    for month, df in tqdm(df_in.groupby("creation_month"), desc="Export 2/3"):
+    log.info("Exporting 2/3")
+
+    for month, df in tqdm(df_in.groupby("creation_month")):
         # Create the folder
         path = f"{PATH_PARQUET}_1/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
@@ -47,7 +50,9 @@ def export_one_file_per_partition(df_in):
 def export_multiple_files_per_partition(df_in):
     """ Create one file per partition """
 
-    for month, df in tqdm(df_in.groupby("creation_month"), desc="Export 3/3"):
+    log.info("Exporting 3/3")
+
+    for month, df in tqdm(df_in.groupby("creation_month")):
         # Create the folder
         path = f"{PATH_PARQUET}_2/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
@@ -62,4 +67,4 @@ if __name__ == "__main__":
     export_one_file_per_partition(df)
     export_multiple_files_per_partition(df)
 
-    print("All extractions done")
+    log.info("All extractions done")

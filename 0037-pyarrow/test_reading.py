@@ -20,6 +20,7 @@ ITERATIONS = 1
 
 
 def get_file_path(path):
+
     parquet_files = []
     for (dirpath, dirnames, filenames) in walk(path):
         for f in filenames:
@@ -28,7 +29,8 @@ def get_file_path(path):
     return parquet_files
 
 
-def panda_read(path, p_filter=False):
+def pandas_read(path, p_filter=False):
+
     dfs = []
     for file in get_file_path(path):
         df = pd.read_parquet(file)
@@ -42,6 +44,7 @@ def panda_read(path, p_filter=False):
 
 
 def pyarrow_single_read(path, p_filter=False):
+
     dfs = []
     for file in get_file_path(path):
         df = pq.read_table(file).to_pandas()
@@ -54,6 +57,7 @@ def pyarrow_single_read(path, p_filter=False):
 
 
 def pyarrow_parquet_ds_read(path, p_filter=False):
+
     kwa = {"filters": [(PARTITION_COL, ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
     df = dataset.read_pandas().to_pandas()
@@ -62,6 +66,7 @@ def pyarrow_parquet_ds_read(path, p_filter=False):
 
 
 def pyarrow_ds_read(path, p_filter=False):
+
     dataset = ds.dataset(path, format="parquet", partitioning="hive")
     if p_filter:
         df = dataset.to_table(filter=ds.field(PARTITION_COL) >= FILTER_VAL)
@@ -72,7 +77,7 @@ def pyarrow_ds_read(path, p_filter=False):
 
 
 FUNCTIONS = [
-    panda_read,
+    pandas_read,
     pyarrow_single_read,
     pyarrow_parquet_ds_read,
     pyarrow_ds_read,
@@ -81,6 +86,7 @@ FUNCTIONS = [
 
 def test_all(tqdm_f=tqdm):
     """ Test all combinations """
+
     out = {}
     for i, path in enumerate([PATH_PARQUET_1, PATH_PARQUET_2]):
         for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}"):

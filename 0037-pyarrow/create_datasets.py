@@ -25,6 +25,7 @@ def transform_to_parquet():
 
     # Add partition column
     df["p_creation_month"] = df["start_time"].to_numpy().astype("datetime64[M]")
+    df["creation_month"] = df["p_creation_month"]
 
     print("Exporting 1/3")
 
@@ -41,6 +42,8 @@ def export_one_file_per_partition(df_in):
         path = f"{PATH_PARQUET_1}/p_creation_month={month:%Y-%m}"
         os.makedirs(path, exist_ok=True)
 
+        # Don't include the partition column
+        df = df.drop(columns=["p_creation_month"])
         df.to_parquet(f"{path}/0001.parquet")
 
 
@@ -53,6 +56,8 @@ def export_multiple_files_per_partition(df_in):
         os.makedirs(path, exist_ok=True)
 
         for i, (_, df_out) in enumerate(df.groupby("state")):
+            # Don't include the partition column
+            df_out = df_out.drop(columns=["p_creation_month"])
             df_out.to_parquet(f"{path}/{str(i).zfill(4)}.parquet")
 
 

@@ -70,4 +70,4 @@ if __name__ == "__main__":
     export_one_file_per_partition(df)
     export_multiple_files_per_partition(df)
 
-    log.info("All extractions done")
+    log.success("All extractions done")

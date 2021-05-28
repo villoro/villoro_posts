@@ -57,8 +57,9 @@ def pyarrow_single_read(path, p_filter=False):
 
 
 def pyarrow_parquet_ds_read(path, p_filter=False):
-
-    kwa = {"filters": [(f"{PARTITION_COL}", ">=", FILTER_VAL)]} if p_filter else {}
+    # for _0 we don't have partition column
+    filter_col = PARTITION_COL if path.endswith("_0") else f"p_{PARTITION_COL}"
+    kwa = {"filters": [(f"{filter_col}", ">=", FILTER_VAL)]} if p_filter else {}
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
     df = dataset.read_pandas().to_pandas()
 
@@ -66,13 +67,18 @@ def pyarrow_parquet_ds_read(path, p_filter=False):
 
 
 def pyarrow_ds_read(path, p_filter=False):
-
     dataset = ds.dataset(path, format="parquet", partitioning="hive")
+
+    # cast the type, otherwise it gives error
+    # and it is not using partition column but column from inside dataset
+    filter_date = np.datetime64(datetime.strptime(FILTER_VAL, "%Y-%m"))
+
     if p_filter:
-        # cast the type, otherwise it gives error
-        # and it is not using partition column but column from inside dataset
-        filter_date = np.datetime64(datetime.strptime(FILTER_VAL,"%Y-%m"))
-        table = dataset.to_table(filter=ds.field(PARTITION_COL) >= filter_date)
+        # for _0 we don't have partition column
+        filter_col = PARTITION_COL if path.endswith("_0") else f"p_{PARTITION_COL}"
+        # for internal columns, it required
+        filter_val = filter_date if path.endswith("_0") else FILTER_VAL
+        table = dataset.to_table(filter=ds.field(filter_col) >= filter_val)
     else:
         table = dataset.to_table()
     df = table.to_pandas(use_threads=True)

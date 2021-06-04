@@ -17,7 +17,7 @@ TEST_NAME = "reading"
 PARTITION_COL = "creation_month"
 FILTER_VAL = "2020-12"
 
-ITERATIONS = 1
+ITERATIONS = 20
 
 
 def get_file_path(path):

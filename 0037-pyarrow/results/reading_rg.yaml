@@ -1,0 +1,12 @@
+pyarrow_ds_read_1:
+- 0.5095347260030394
+pyarrow_ds_read_2:
+- 0.7643795280018821
+pyarrow_parquet_ds_read_1:
+- 1.5377536400010285
+pyarrow_parquet_ds_read_2:
+- 2.415394113999355
+pyarrow_single_read_1:
+- 6.748011315998156
+pyarrow_single_read_2:
+- 27.955841318002058

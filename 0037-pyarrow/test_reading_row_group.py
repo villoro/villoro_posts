@@ -75,8 +75,19 @@ def test_all(tqdm_f=tqdm):
 
     out = {}
     for i in range(1, 3):
-        for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}"):
-            out[f"{func.__name__}_{i}"] = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}")
+
+        out[f"dataset_{i}"] = {}
+
+        for fil in [True]:
+            ftext = "filters" if fil else "nofilter"
+            out[f"dataset_{i}"][ftext] = {}
+
+            for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}_{fil}"):
+
+                result = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}")
+
+                # Store result
+                out[f"dataset_{i}"][ftext][func.__name__] = result
 
     store_results(out, TEST_NAME)
 

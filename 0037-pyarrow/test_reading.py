@@ -1,11 +1,12 @@
 from os import walk
 
 import numpy as np
-from tqdm import tqdm
-from datetime import datetime
 import pandas as pd
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
+
+from datetime import datetime
+from tqdm import tqdm
 
 from create_datasets import PATH_PARQUET
 from utils import store_results
@@ -60,6 +61,7 @@ def pyarrow_parquet_ds_read(path, p_filter=False):
     # for _0 we don't have partition column
     filter_col = PARTITION_COL if path.endswith("_0") else f"p_{PARTITION_COL}"
     kwa = {"filters": [(f"{filter_col}", ">=", FILTER_VAL)]} if p_filter else {}
+
     dataset = pq.ParquetDataset(path, validate_schema=False, **kwa)
     df = dataset.read_pandas().to_pandas()
 
@@ -76,11 +78,15 @@ def pyarrow_ds_read(path, p_filter=False):
     if p_filter:
         # for _0 we don't have partition column
         filter_col = PARTITION_COL if path.endswith("_0") else f"p_{PARTITION_COL}"
-        # for internal columns, it required
+
+        # for internal columns, it's required
         filter_val = filter_date if path.endswith("_0") else FILTER_VAL
+
         table = dataset.to_table(filter=ds.field(filter_col) >= filter_val)
+
     else:
         table = dataset.to_table()
+
     df = table.to_pandas(use_threads=True)
     return df.shape
 
@@ -97,10 +103,20 @@ def test_all(tqdm_f=tqdm):
     """ Test all combinations """
 
     out = {}
-    for fil in [False, True]:
-        for i in range(3):
+    for i in range(3):
+
+        out[f"dataset_{i}"] = {}
+
+        for fil in [False, True]:
+            ftext = "filters" if fil else "nofilter"
+            out[f"dataset_{i}"][ftext] = {}
+
             for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}_{fil}"):
-                out[f"{func.__name__}_{i}_{fil}"] = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}", fil)
+
+                result = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}", fil)
+
+                # Store result
+                out[f"dataset_{i}"][ftext][func.__name__] = result
 
     store_results(out, TEST_NAME)
 

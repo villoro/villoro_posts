@@ -85,7 +85,6 @@ def test_all(tqdm_f=tqdm):
             for func in tqdm_f(FUNCTIONS, desc=f"dataset_{i}_{fil}"):
 
                 result = timeit(ITERATIONS)(func)(f"{PATH_PARQUET}_{i}")
-
                 # Store result
                 out[f"dataset_{i}"][ftext][func.__name__] = result
 

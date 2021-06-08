@@ -1,0 +1,6 @@
+loguru
+pandas
+pyarrow
+pyyaml
+s3fs
+tqdm

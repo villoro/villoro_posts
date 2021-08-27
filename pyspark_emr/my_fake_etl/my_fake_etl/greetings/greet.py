@@ -5,7 +5,7 @@ from loguru import logger
 
 def greet(greeting_word, name):
 
-    logger.info(f"{greeting_word} {name}")
+    logger.info(f"{greeting_word.title()} {name}")
 
 
 def main():

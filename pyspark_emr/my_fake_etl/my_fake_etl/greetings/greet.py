@@ -10,7 +10,7 @@ def greet(greeting_word, name):
 
 def main():
 
-    name, greeting_word = get_args()
+    greeting_word, name = get_args()
 
     greet(greeting_word, name)
 

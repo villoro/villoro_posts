@@ -2,6 +2,7 @@ from datetime import date
 
 import pandas as pd
 
+from loguru import logger as log
 from pyspark.sql import SparkSession
 
 LIVE_DB = "standardized_glovo_live"
@@ -11,7 +12,7 @@ DATABASES = [
     # Inputs
     LIVE_DB,
     CUSTOM_EVENT_IN,
-    "mpcustomer_screen_views"
+    "mpcustomer_screen_views",
     # Outputs
     "enriched_custom_events",
     "enriched_screen_views",
@@ -20,6 +21,7 @@ DATABASES = [
 
 def recreate_databases(spark):
     for db in DATABASES:
+        log.info(f"Creating database '{db}'")
         spark.sql(f"DROP DATABASE IF EXISTS {db} CASCADE")
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {db}")
 
@@ -27,7 +29,7 @@ def recreate_databases(spark):
 DATA_CITIES = {
     "code": ["BCN", "VAL", "CAG"],
     "time_zone": ["Europe/Madrid", "Europe/Madrid", "Europe/Rome"],
-    "country": ["ES", "ES", "IT"],
+    "country_code": ["ES", "ES", "IT"],
 }
 
 DATA_DEVICES = {
@@ -47,10 +49,13 @@ DATA_ORDER_CREATED = {
 
 
 def create_tables(spark):
-    def create_table(data, database, table):
+    def create_table(data, database, table_name):
+        table = f"{database}.{table_name}"
+
+        log.info(f"Creating table '{table}'")
         dfg = pd.DataFrame(data)
-        spark.createDataFrame(dfg).write.saveAsTable(f"{database}.{table}")
+        spark.createDataFrame(dfg).write.saveAsTable(table)
 
     create_table(DATA_CITIES, LIVE_DB, "cities")
     create_table(DATA_DEVICES, LIVE_DB, "devices")
-    create_table(DATA_DEVICES, CUSTOM_EVENT_IN, "order_created")
+    create_table(DATA_ORDER_CREATED, CUSTOM_EVENT_IN, "order_created")

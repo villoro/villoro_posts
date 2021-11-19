@@ -10,7 +10,7 @@ class Transformation(ABC):
     def _apply(self, sdf: DataFrame) -> DataFrame:
         """This shouldn't be implemented"""
 
-        log.info(f"Applying transformation '{self.__name__}'")
+        log.info(f"Applying transformation '{type(self).__name__}'")
         return self.transform(sdf)
 
     @abstractmethod

@@ -1,9 +1,13 @@
+import shutil
+
 from datetime import date
 
 import pandas as pd
 
 from loguru import logger as log
 from pyspark.sql import SparkSession
+
+SPARK_WAREHOUSE_PATH = "spark-warehouse"
 
 LIVE_DB = "standardized_glovo_live"
 CUSTOM_EVENT_IN = "mpcustomer_custom_events"
@@ -20,6 +24,10 @@ DATABASES = [
 
 
 def recreate_databases(spark):
+
+    log.info(f"Removing spark warehouse (path = '{SPARK_WAREHOUSE_PATH}')")
+    shutil.rmtree(SPARK_WAREHOUSE_PATH, ignore_errors=True)
+
     for db in DATABASES:
         log.info(f"Creating database '{db}'")
         spark.sql(f"DROP DATABASE IF EXISTS {db} CASCADE")

@@ -7,6 +7,8 @@ from pyspark.sql import DataFrame
 from adapters.loaders import LoaderCustomEvent
 from adapters.writers import WriterCustomEvent
 
+from utils import log
+
 
 class CustomEventPort(LoaderCustomEvent, WriterCustomEvent):
 
@@ -33,7 +35,10 @@ class CustomEventPort(LoaderCustomEvent, WriterCustomEvent):
         return sdf.filter(f"{self.creation_date} BETWEEN '{start:%Y-%m-%d}' AND '{end:%Y-%m-%d}'")
 
     def write(self):
-        self.sdf.write.format("parquet").saveAsTable(f"{self.database_out}.{self.name}")
+        table = f"{self.database_out}.{self.name}"
+        log.info(f"Writting table '{table}'")
+
+        self.sdf.write.format("parquet").saveAsTable(table)
 
 
 class OrderCreatedPort(CustomEventPort):

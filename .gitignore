@@ -40,13 +40,11 @@ dist/
 *.exe
 
 # h2o logs
-*/h2ologs
-*/*/h2ologs
+**/h2ologs
 
 # --------------------- PERSONAL EXCLUSIONS -----------------------------------
 # Data folders
-/data
-*/data
+**/data
 
 
 # --------------------- PROJECT EXCLUSIONS ------------------------------------
@@ -61,3 +59,5 @@ dist/
 
 *.secret
 *hidden_*
+
+**/uncommitted

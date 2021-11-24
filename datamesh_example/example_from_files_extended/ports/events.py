@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from datetime import date
 from datetime import timedelta
 
@@ -6,8 +5,6 @@ from pyspark.sql import DataFrame
 
 from loaders import LoaderCustomEvent
 from writers import WriterCustomEvent
-
-from utils import log
 
 
 class CustomEventPort(LoaderCustomEvent, WriterCustomEvent):

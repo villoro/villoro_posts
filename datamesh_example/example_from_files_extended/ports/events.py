@@ -12,7 +12,9 @@ from utils import log
 
 class CustomEventPort(LoaderCustomEvent, WriterCustomEvent):
 
+    customer_id = "customer_id"
     creation_date = "p_creation_date"
+    creation_time = "creation_time"
     city = "custom_attributes__city"
 
     def __init__(self, spark, exec_date: date, n_days: int):

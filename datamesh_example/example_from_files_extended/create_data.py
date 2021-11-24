@@ -1,6 +1,7 @@
 import shutil
 
 from datetime import date
+from datetime import datetime
 
 import pandas as pd
 
@@ -45,8 +46,24 @@ DATA_DEVICES = {
     "experiment_score": [10, 30, 50, 99],
 }
 
+DATA_ORDERS = {
+    "customer_id": [1, 1, 2],
+    "creation_time": [
+        datetime(2021, 11, 1),
+        datetime(2021, 11, 30),
+        datetime(2021, 11, 1),
+    ],
+}
+
 DATA_ORDER_CREATED = {
     "custom_attributes__city": ["BCN", "BCN", "CAG", "CAG"],
+    "customer_id": [1, 1, 2, 2],
+    "creation_time": [
+        datetime(2021, 11, 19, 12),
+        datetime(2021, 11, 18, 8),
+        datetime(2021, 11, 17, 5, 5),
+        datetime(2021, 11, 1, 7, 29),
+    ],
     "p_creation_date": [
         date(2021, 11, 19),
         date(2021, 11, 18),
@@ -66,4 +83,5 @@ def create_tables(spark):
 
     create_table(DATA_CITIES, LIVE_DB, "cities")
     create_table(DATA_DEVICES, LIVE_DB, "devices")
+    create_table(DATA_ORDERS, LIVE_DB, "orders")
     create_table(DATA_ORDER_CREATED, CUSTOM_EVENT_IN, "order_created")

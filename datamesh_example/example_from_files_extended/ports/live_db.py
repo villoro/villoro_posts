@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 
 from pyspark.sql import DataFrame
@@ -14,6 +15,21 @@ class CitiesPort(LoaderLiveDB):
 
     def select(self, sdf) -> DataFrame:
         return sdf.select(self.code, self.time_zone, self.country_code)
+
+
+class OrdersPort(LoaderLiveDB):
+    name_in = "orders"
+
+    customer_id = "customer_id"
+    creation_time = "order_creation_time"
+
+    number_of_orders = "number_of_orders"
+
+    def select(self, sdf) -> DataFrame:
+        return sdf.selectExpr(
+            self.customer_id,
+            f"creation_time AS {self.creation_time}",
+        )
 
 
 class DevicesPort(LoaderLiveDB):
@@ -39,19 +55,6 @@ class CustomersPort(LoaderLiveDB):
         return sdf.selectExpr(
             self.customer_id,
             f"experiment_score AS {self.experiment_score}",
-        )
-
-
-class OrdersPort(LoaderLiveDB):
-    name_in = "orders"
-
-    customer_id = "customer_id"
-    creation_time = "order_creation_time"
-
-    def select(self, sdf) -> DataFrame:
-        return sdf.selectExpr(
-            self.customer_id,
-            f"creation_time AS {self.order_creation_time}",
         )
 
 

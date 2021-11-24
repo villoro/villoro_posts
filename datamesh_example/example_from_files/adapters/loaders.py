@@ -4,18 +4,13 @@ from abc import abstractmethod
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
 
+from utils import log
+
 
 class Loader(ABC):
     def __init__(self, spark: SparkSession):
         self.spark = spark
         self.sdf = self.load()
-
-    def load(self) -> DataFrame:
-        sdf = self.spark.table(f"{self.database_in}.{self.name_in}")
-        return self.select(sdf)
-
-    def select(self, sdf):
-        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -25,6 +20,19 @@ class Loader(ABC):
     @property
     @abstractmethod
     def name_in(self):
+        raise NotImplementedError
+
+    @property
+    def table_in(self):
+        return f"{self.database_in}.{self.name_in}"
+
+    def load(self) -> DataFrame:
+        log.info(f"Loading '{self.table_in}'")
+
+        sdf = self.spark.table(self.table_in)
+        return self.select(sdf)
+
+    def select(self, sdf):
         raise NotImplementedError
 
 

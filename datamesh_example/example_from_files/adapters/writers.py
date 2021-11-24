@@ -1,6 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
 
+from utils import log
+
 
 class Writer(ABC):
     @property
@@ -13,8 +15,13 @@ class Writer(ABC):
     def name_out(self):
         raise NotImplementedError
 
+    @property
+    def table_out(self):
+        return f"{self.database_out}.{self.name_out}"
+
     def write(self):
-        self.sdf.write.format("parquet").saveAsTable(f"{self.database_out}.{self.name_out}")
+        log.info(f"Writting '{self.table_out}'")
+        self.sdf.write.format("parquet").saveAsTable(self.table_out)
 
 
 class WriterCustomEvent(Writer):

@@ -2,9 +2,11 @@ from datetime import date
 
 from ports.events import OrderCreatedPort
 from ports.live_db import CitiesPort
+from ports.live_db import CustomerSubscriptionsPort
 from ports.live_db import OrdersPort
 
 from transformations.number_of_orders import AddNumberOfOrders
+from transformations.prime_data import AddIsPrime
 from transformations.timezone import AddTimezone
 
 from jobs.interfaces import TransformLinearly
@@ -17,6 +19,7 @@ def do(spark, exec_date: date, n_days: int):
     transformations = [
         AddTimezone(CitiesPort(spark)),
         AddNumberOfOrders(OrdersPort(spark)),
+        AddIsPrime(CustomerSubscriptionsPort(spark, exec_date, n_days)),
     ]
 
     order_created_job = TransformLinearly(

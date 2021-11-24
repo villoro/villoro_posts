@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 
 from pyspark.sql import DataFrame
 
@@ -59,6 +60,8 @@ class CustomersPort(LoaderLiveDB):
 
 
 class CustomerSubscriptionsPort(LoaderLiveDB):
+    name_in = "customer_subscriptions"
+
     id = "customer_subscription_id"
     start_date = "start_date"
     expiration_date = "expiration_date"
@@ -72,14 +75,14 @@ class CustomerSubscriptionsPort(LoaderLiveDB):
 
     def load(self) -> DataFrame:
 
-        start = self.exec_date - timedelta(days=self.number_of_days)
+        start = self.exec_date - timedelta(days=self.n_days)
 
         query = f"""
             SELECT
                 csp.customer_subscription_id AS {self.id},
                 cs.customer_id as {self.customer_id},
-                csp.{start_date},
-                csp.{expiration_date}
+                csp.{self.start_date},
+                csp.{self.expiration_date}
             FROM {self.database_in}.customer_subscription_periods AS csp
             LEFT JOIN {self.database_in}.customer_subscriptions   AS cs
                 ON csp.customer_subscription_id = cs.id

@@ -16,6 +16,7 @@ class CustomEventPort(LoaderCustomEvent, WriterCustomEvent):
     creation_date = "p_creation_date"
     creation_time = "creation_time"
     city = "custom_attributes__city"
+    is_prime = "is_prime"
 
     def __init__(self, spark, exec_date: date, n_days: int):
         self.exec_date = exec_date

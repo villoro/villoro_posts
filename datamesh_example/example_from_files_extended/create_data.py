@@ -55,6 +55,17 @@ DATA_ORDERS = {
     ],
 }
 
+DATA_CUSTOMER_SUBSCRIPTIONS = {
+    "id": [11, 22],
+    "customer_id": [1, 2],
+}
+
+DATA_CUSTOMER_SUBSCRIPTIONS_PERIODS = {
+    "customer_subscription_id": [11, 22],
+    "start_date": [date(2021, 11, 1), date(2021, 11, 1)],
+    "expiration_date": [date(2021, 11, 2), date(2021, 11, 30)],
+}
+
 DATA_ORDER_CREATED = {
     "custom_attributes__city": ["BCN", "BCN", "CAG", "CAG"],
     "customer_id": [1, 1, 2, 2],
@@ -84,4 +95,6 @@ def create_tables(spark):
     create_table(DATA_CITIES, LIVE_DB, "cities")
     create_table(DATA_DEVICES, LIVE_DB, "devices")
     create_table(DATA_ORDERS, LIVE_DB, "orders")
+    create_table(DATA_CUSTOMER_SUBSCRIPTIONS, LIVE_DB, "customer_subscriptions")
+    create_table(DATA_CUSTOMER_SUBSCRIPTIONS_PERIODS, LIVE_DB, "customer_subscription_periods")
     create_table(DATA_ORDER_CREATED, CUSTOM_EVENT_IN, "order_created")

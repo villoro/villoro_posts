@@ -7,7 +7,8 @@ from ports.live_db import OrdersPort
 
 from transformations.number_of_orders import AddNumberOfOrders
 from transformations.prime_data import AddIsPrime
-from transformations.timezone import AddTimezone
+from transformations.time_related import AddLocalTime
+from transformations.time_related import AddTimezone
 
 from jobs.interfaces import TransformLinearly
 
@@ -18,6 +19,7 @@ def do(spark, exec_date: date, n_days: int):
     order_created = OrderCreatedPort(spark, exec_date, n_days)
     transformations = [
         AddTimezone(CitiesPort(spark)),
+        AddLocalTime(),
         AddNumberOfOrders(OrdersPort(spark)),
         AddIsPrime(CustomerSubscriptionsPort(spark, exec_date, n_days)),
     ]

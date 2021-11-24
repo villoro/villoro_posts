@@ -6,21 +6,23 @@ from adapters.loaders import LoaderLiveDB
 
 
 class CitiesPort(LoaderLiveDB):
+    name_in = "cities"
+
     code = "code"
     time_zone = "time_zone"
     country_code = "country_code"
 
-    def load(self) -> DataFrame:
-        sdf = self.spark.table(f"{self.database_in}.cities")
+    def select(self, sdf) -> DataFrame:
         return sdf.select(self.code, self.time_zone, self.country_code)
 
 
 class DevicesPort(LoaderLiveDB):
+    name_in = "devices"
+
     device_id = "custom_attributes__device_id"
     experiment_score = "device_experiment_score"
 
-    def load(self) -> DataFrame:
-        sdf = self.spark.table(f"{self.database_in}.devices")
+    def select(self, sdf) -> DataFrame:
         return sdf.selectExpr(
             f"id AS {self.device_id}",
             f"experiment_score AS {self.experiment_score}",
@@ -28,11 +30,12 @@ class DevicesPort(LoaderLiveDB):
 
 
 class CustomersPort(LoaderLiveDB):
+    name_in = "customers"
+
     customer_id = "customer_id"
     experiment_score = "customer_experiment_score"
 
-    def load(self) -> DataFrame:
-        sdf = self.spark.table(f"{self.database_in}.customers")
+    def select(self, sdf) -> DataFrame:
         return sdf.selectExpr(
             self.customer_id,
             f"experiment_score AS {self.experiment_score}",
@@ -40,11 +43,12 @@ class CustomersPort(LoaderLiveDB):
 
 
 class OrdersPort(LoaderLiveDB):
+    name_in = "orders"
+
     customer_id = "customer_id"
     creation_time = "order_creation_time"
 
-    def load(self) -> DataFrame:
-        sdf = self.spark.table(f"{self.database_in}.orders")
+    def select(self, sdf) -> DataFrame:
         return sdf.selectExpr(
             self.customer_id,
             f"creation_time AS {self.order_creation_time}",

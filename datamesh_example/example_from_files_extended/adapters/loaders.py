@@ -10,8 +10,21 @@ class Loader(ABC):
         self.spark = spark
         self.sdf = self.load()
 
-    @abstractmethod
     def load(self) -> DataFrame:
+        sdf = self.spark.table(f"{self.database_in}.{self.name_in}")
+        return self.select(sdf)
+
+    def select(self, sdf):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def database_in(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def name_in(self):
         raise NotImplementedError
 
 

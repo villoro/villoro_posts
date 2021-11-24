@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame
 
-from adapters.loaders import LoaderLiveDB
+from loaders import LoaderLiveDB
 
 
 class CitiesPort(LoaderLiveDB):

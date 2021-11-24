@@ -4,8 +4,8 @@ from datetime import timedelta
 
 from pyspark.sql import DataFrame
 
-from adapters.loaders import LoaderCustomEvent
-from adapters.writers import WriterCustomEvent
+from loaders import LoaderCustomEvent
+from writers import WriterCustomEvent
 
 from utils import log
 

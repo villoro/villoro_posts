@@ -8,9 +8,26 @@ from utils import log
 
 
 class Loader(ABC):
-    def __init__(self, spark: SparkSession):
+    def __init__(self, spark: SparkSession, **kwargs):
         self.spark = spark
+        self._set_kwargs(kwargs)
+
+        # Needs to happen after setting kwargs
         self.sdf = self.load()
+
+    def _set_kwargs(self, kwargs):
+        """
+        Set everything that comes in kwargs as a class attribute
+            for example if we have kwargs = {n_days: 3}
+            this is equivalent to self.n_days = 3
+        """
+        if "sdf" in kwargs.keys():
+            raise ValueError(
+                "You cannot pass 'sdf' as a parameter to the load "
+                "since it needs to be use for the spark DataFrame"
+            )
+
+        self.__dict__.update(kwargs)
 
     @property
     @abstractmethod

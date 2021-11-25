@@ -21,7 +21,7 @@ def do(spark, exec_date: date, n_days: int):
         AddTimezone(CitiesPort(spark)),
         AddLocalTime(),
         AddNumberOfOrders(OrdersPort(spark)),
-        AddIsPrime(CustomerSubscriptionsPort(spark, exec_date, n_days)),
+        AddIsPrime(CustomerSubscriptionsPort(spark, exec_date=exec_date, n_days=n_days)),
     ]
 
     order_created_job = TransformLinearly(

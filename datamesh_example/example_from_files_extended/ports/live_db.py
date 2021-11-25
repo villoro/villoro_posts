@@ -66,12 +66,6 @@ class CustomerSubscriptionsPort(LoaderLiveDB):
     expiration_date = "expiration_date"
     customer_id = "s_customer_id"
 
-    def __init__(self, spark, exec_date: date, n_days: int):
-        self.exec_date = exec_date
-        self.n_days = n_days
-
-        super().__init__(spark)
-
     def load(self) -> DataFrame:
 
         start = self.exec_date - timedelta(days=self.n_days)

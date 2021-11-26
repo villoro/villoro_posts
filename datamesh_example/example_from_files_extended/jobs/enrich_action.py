@@ -27,11 +27,16 @@ class EnrichActionJob(TransformLinearlyJob):
         self.table = self.action_port(spark, exec_date, n_days)
 
         # Set transformations
-        self.transformations = [
-            AddTimezone(CitiesPort(spark)),
-            AddLocalTime(),
-            AddNumberOfOrders(OrdersPort(spark)),
-            AddIsPrime(CustomerSubscriptionsPort(spark, exec_date=exec_date, n_days=n_days)),
+        self.transformations = self.get_transformations()
+
+    def get_transformations(self):
+        return [
+            AddTimezone(CitiesPort(self.spark)),
+            # AddLocalTime(),
+            AddNumberOfOrders(OrdersPort(self.spark)),
+            AddIsPrime(
+                CustomerSubscriptionsPort(self.spark, exec_date=self.exec_date, n_days=self.n_days)
+            ),
         ]
 
     @property
@@ -42,3 +47,6 @@ class EnrichActionJob(TransformLinearlyJob):
 
 class EnrichCEOrderCreatedJob(EnrichActionJob):
     action_port = OrderCreatedPort
+
+    def get_transformations(self):
+        return super().get_transformations() + [AddLocalTime()]

@@ -4,6 +4,7 @@ from datetime import timedelta
 from pyspark.sql import DataFrame
 
 from loaders import LoaderLiveDB
+from utils import log
 
 
 class CitiesPort(LoaderLiveDB):
@@ -67,6 +68,8 @@ class CustomerSubscriptionsPort(LoaderLiveDB):
     customer_id = "s_customer_id"
 
     def load(self) -> DataFrame:
+
+        log.info(f"Loading '{self.table_in}'")
 
         start = self.exec_date - timedelta(days=self.n_days)
 

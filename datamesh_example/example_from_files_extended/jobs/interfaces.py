@@ -4,7 +4,7 @@ from transformations.interfaces import Table
 from transformations.interfaces import Transformation
 
 
-class TransformLinearly:
+class TransformLinearlyJob:
     def __init__(self, table: Table, transformations: List[Transformation]):
         self.table = table
         self.transformations = transformations

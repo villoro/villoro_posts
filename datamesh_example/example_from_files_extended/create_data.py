@@ -90,7 +90,7 @@ def create_tables(spark):
 
         log.info(f"Creating table '{table}'")
         dfg = pd.DataFrame(data)
-        spark.createDataFrame(dfg).write.saveAsTable(table)
+        spark.createDataFrame(dfg).repartition(1).write.saveAsTable(table)
 
     create_table(DATA_CITIES, LIVE_DB, "cities")
     create_table(DATA_DEVICES, LIVE_DB, "devices")

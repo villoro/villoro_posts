@@ -21,7 +21,7 @@ class Writer(ABC):
 
     def write(self):
         log.info(f"Writting '{self.table_out}'")
-        self.sdf.write.format("parquet").saveAsTable(self.table_out)
+        self.sdf.repartition(1).write.format("parquet").saveAsTable(self.table_out)
 
 
 class WriterCustomEvent(Writer):
